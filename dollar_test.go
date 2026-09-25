@@ -10,6 +10,14 @@ func TestDollarMulti(t *testing.T) {
 	}
 }
 
+func TestMoneyMulti(t *testing.T) {
+	five := Money{Amount: 5, Currency: "eup"}
+	ten := five.Times(2)
+	if ten.Amount != 10 || ten.Currency !=  "eup" {
+		t.Errorf("failed, expected 10eup, got: %d%s\n", ten.Amount, ten.Currency)
+	}
+}
+
 type Dollar struct {
 	Amount int
 }
