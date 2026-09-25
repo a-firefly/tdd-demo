@@ -25,3 +25,15 @@ type Dollar struct {
 func (d Dollar) Times(x int) Dollar {
 	return Dollar{d.Amount * x}
 }
+
+type Money struct {
+	Amount int
+	Currency string
+}
+
+func (m Money) Times(x int) Money {
+	return Money{
+		Amount: m.Amount * x,
+		Currency: m.Currency,
+	}
+}
