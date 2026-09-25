@@ -3,28 +3,31 @@ package main
 import "testing"
 
 func TestMultiInDollar(t *testing.T) {
-	usd := "USD"
-	five := Money{5, usd}
-	ten := five.Times(2)
-	if ten.Amount != 10 || ten.Currency != usd {
-		t.Errorf("failed, expected 10, got: %f\n", ten.Amount)
-	}
+	currency := "USD"
+	five := Money{5, currency}
+	actual := five.Times(2)
+	expected := Money{ Amount: 10, Currency: currency}
+	assetEqual(t, expected, actual)
 }
 
 func TestMoneyMulti(t *testing.T) {
-	eur := "EUR"
-	five := Money{Amount: 5, Currency: eur}
-	ten := five.Times(2)
-	if ten.Amount != 10 || ten.Currency !=  eur {
-		t.Errorf("failed, expected 10eup, got: %f%s\n", ten.Amount, ten.Currency)
-	}
+	currency := "EUR"
+	five := Money{Amount: 10, Currency: currency}
+	actual := five.Times(2)
+	expected := Money{ Amount: 20, Currency: currency}
+	assetEqual(t, expected, actual)
 }
 
 func TestMoney_Divide(t *testing.T) {
 	currency := "KRW"
 	m := Money{Amount: 4002, Currency: currency}
-	rst := m.Divide(4)
-	if rst.Amount != 1000.5 || rst.Currency !=  currency {
-		t.Errorf("failed, expected 1000.5 %s, got: %f%s\n", currency, rst.Amount, rst.Currency)
+	actual := m.Divide(4)
+	expected := Money{ Amount: 1000.5, Currency: currency}
+	assetEqual(t, expected, actual)
+}
+
+func assetEqual(t *testing.T, expected, actual Money) {
+	if actual != expected {
+		t.Errorf("failed, expected %+v, got: %+v\n", expected, actual)
 	}
 }
