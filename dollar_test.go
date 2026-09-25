@@ -15,5 +15,5 @@ type Dollar struct {
 }
 
 func (d Dollar) Times(x int) Dollar {
-	return Dollar{10}
+	return Dollar{d.Amount * x}
 }
