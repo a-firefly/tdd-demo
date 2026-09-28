@@ -7,14 +7,19 @@ func (p Portfolio) Add(m Money) Portfolio {
 }
 
 func (p Portfolio) Evaluate(currency string) Money {
-	rate := 1.2
 	total := 0.0
 	for _, m := range p {
-		if m.currency != currency {
-			total += m.amount * rate
-		} else {
-			total += m.amount
-		}
+		total += convert(m, currency)
 	}
 	return Money{total, currency}
+}
+
+// convert 把 Money 转成指定币种对应的金额
+func convert(m Money, currency string) float64 {
+	rate := 1.2
+	if m.currency == currency {
+		return m.amount
+	}
+
+	return rate * m.amount
 }
