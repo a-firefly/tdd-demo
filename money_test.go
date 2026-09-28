@@ -2,46 +2,47 @@ package main
 
 import (
 	"testing"
+	"tdd/stocks"
 )
 
 func TestMultiInDollar(t *testing.T) {
 	currency := "USD"
-	five := Money{5, currency}
+	five := stocks.NewMoney(5, currency)
 	actual := five.Times(2)
-	expected := Money{ Amount: 10, Currency: currency}
+	expected := stocks.NewMoney(10, currency)
 	assetEqual(t, expected, actual)
 }
 
 func TestMoneyMulti(t *testing.T) {
 	currency := "EUR"
-	five := Money{Amount: 10, Currency: currency}
+	five := stocks.NewMoney(10, currency)
 	actual := five.Times(2)
-	expected := Money{ Amount: 20, Currency: currency}
+	expected := stocks.NewMoney(20, currency)
 	assetEqual(t, expected, actual)
 }
 
 func TestMoney_Divide(t *testing.T) {
 	currency := "KRW"
-	m := Money{Amount: 4002, Currency: currency}
+	m := stocks.NewMoney(4002, currency)
 	actual := m.Divide(4)
-	expected := Money{ Amount: 1000.5, Currency: currency}
+	expected := stocks.NewMoney(1000.5, currency)
 	assetEqual(t, expected, actual)
 }
 
 func TestAddtionOfUSDAndEUR(t *testing.T) {
-	fiveUSD := Money{5, "USD"}
-	tenEUR := Money{10, "EUR"}
-	var portfolio Portfolie
+	fiveUSD := stocks.NewMoney(5, "USD")
+	tenEUR := stocks.NewMoney(10, "EUR")
+	var portfolio stocks.Portfolio
 	portfolio = portfolio.Add(fiveUSD)
 	portfolio = portfolio.Add(tenEUR)
 	rst := portfolio.Evaluate("USD")
 
-	expected := Money{17, "USD"}
+	expected := stocks.NewMoney(17, "USD")
 
 	assetEqual(t, expected, rst)
 }
 
-func assetEqual(t *testing.T, expected, actual Money) {
+func assetEqual(t *testing.T, expected, actual stocks.Money) {
 	if actual != expected {
 		t.Errorf("failed, expected %+v, got: %+v\n", expected, actual)
 	}
