@@ -5,14 +5,6 @@ import (
 	"tdd/stocks"
 )
 
-func TestMultiInDollar(t *testing.T) {
-	currency := "USD"
-	five := stocks.NewMoney(5, currency)
-	actual := five.Times(2)
-	expected := stocks.NewMoney(10, currency)
-	assetEqual(t, expected, actual)
-}
-
 func TestMoneyMulti(t *testing.T) {
 	currency := "EUR"
 	five := stocks.NewMoney(10, currency)
