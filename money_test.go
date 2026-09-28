@@ -34,6 +34,19 @@ func TestAddtionOfUSDAndEUR(t *testing.T) {
 	assetEqual(t, expected, rst)
 }
 
+func TestAddtionOfDollarsAndWons(t *testing.T) {
+	oneDollar := stocks.NewMoney(1, "USD")
+	elvenHundredWon := stocks.NewMoney(1100, "KRW")
+	var portfolio stocks.Portfolio
+	portfolio = portfolio.Add(oneDollar)
+	portfolio = portfolio.Add(elvenHundredWon)
+	rst := portfolio.Evaluate("KRW")
+
+	expected := stocks.NewMoney(2200, "KRW")
+
+	assetEqual(t, expected, rst)
+}
+
 func assetEqual(t *testing.T, expected, actual stocks.Money) {
 	if actual != expected {
 		t.Errorf("failed, expected %+v, got: %+v\n", expected, actual)
