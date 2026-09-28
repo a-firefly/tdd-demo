@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMultiInDollar(t *testing.T) {
 	currency := "USD"
@@ -24,6 +26,19 @@ func TestMoney_Divide(t *testing.T) {
 	actual := m.Divide(4)
 	expected := Money{ Amount: 1000.5, Currency: currency}
 	assetEqual(t, expected, actual)
+}
+
+func TestAddtionOfUSDAndEUR(t *testing.T) {
+	fiveUSD := Money{5, "USD"}
+	tenEUR := Money{10, "EUR"}
+	var portfolio Portfolie
+	portfolio = portfolio.Add(fiveUSD)
+	portfolio = portfolio.Add(tenEUR)
+	rst := portfolio.Evaluate("USD")
+
+	expected := Money{17, "USD"}
+
+	assetEqual(t, expected, rst)
 }
 
 func assetEqual(t *testing.T, expected, actual Money) {
