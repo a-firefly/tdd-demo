@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"tdd/stocks"
 	"testing"
 )
@@ -63,6 +64,46 @@ func TestAddtionWithMissingExchangeRates(t *testing.T) {
 	}
 
 	assetEqual(t, expectedErreMsg, actualErr.Error())
+}
+
+func TestConversion(t *testing.T) {
+	tenEuros := stocks.NewMoney(10, "EUR")
+	bank := stocks.NewBank()
+	bank.AddExchangeRates("EUR", "USD", 1.2)
+	actual, err := bank.Convert(tenEuros, "USD")
+	expected := stocks.NewMoney(12, "USD")
+	asserNil(t, err)
+	if actual == nil {
+		t.Error("unknown error")
+	}
+
+	assetEqual(t, *actual, expected)
+}
+
+// asserNil 断言 actual 为 nil，包括接口中装着的带类型的 nil。
+// any 是 interface{} 的别名，可以接收任意类型；reflect 用来检查其动态类型和值。
+// 0、空字符串和已初始化的空切片等零值或空值不等于 nil，断言应失败。
+func asserNil(t *testing.T, actual any) {
+	// 将断言失败的位置定位到调用处。
+	t.Helper()
+	// 接口可以理解为“动态类型 + 动态值”，两者都没有时接口本身才等于 nil。
+	// 先处理这种情况，因为 reflect.ValueOf(nil) 返回无效值，调用 IsNil 会 panic。
+	if actual == nil {
+		return
+	}
+
+	// 例如 var p *int = nil，传入 any 后动态类型为 *int、动态值为 nil，
+	// 此时 actual == nil 为 false，需要用 IsNil 检查接口内的实际值。
+	value := reflect.ValueOf(actual)
+	// 只有允许为 nil 的类型才能调用 IsNil；int、string、struct 等类型会 panic。
+	switch value.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice, reflect.UnsafePointer:
+		if value.IsNil() {
+			return
+		}
+	}
+
+	t.Errorf("failed, expected nil, got: %+v", actual)
 }
 
 func assetEqual[T comparable](t *testing.T, expected, actual T) {

@@ -17,8 +17,7 @@ func (p Portfolio) Evaluate(currency string) (Money, error) {
 	failures := []string{}
 	total := 0.0
 	for _, m := range p {
-		amount, ok := convert(m, currency)
-		if ok {
+		if amount, ok := convert(m, currency); ok {
 			total += amount
 		} else {
 			failures = append(failures, m.currency+"->"+currency)
