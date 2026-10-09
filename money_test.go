@@ -6,6 +6,14 @@ import (
 	"testing"
 )
 
+var bank stocks.Bank
+
+func init() {
+	bank = stocks.NewBank()
+	bank.AddExchangeRates("EUR", "USD", 1.2)
+	bank.AddExchangeRates("USD", "KRW", 1100)
+}
+
 func TestMoneyMulti(t *testing.T) {
 	currency := "EUR"
 	five := stocks.NewMoney(10, currency)
@@ -28,11 +36,11 @@ func TestAddtionOfUSDAndEUR(t *testing.T) {
 	var portfolio stocks.Portfolio
 	portfolio = portfolio.Add(fiveUSD)
 	portfolio = portfolio.Add(tenEUR)
-	rst, _ := portfolio.Evaluate("USD")
-
+	rst, err := portfolio.Evaluate(bank, "USD")
+	asserNil(t, err)
 	expected := stocks.NewMoney(17, "USD")
 
-	assetEqual(t, expected, rst)
+	assetEqual(t, expected, *rst)
 }
 
 func TestAddtionOfDollarsAndWons(t *testing.T) {
@@ -41,11 +49,11 @@ func TestAddtionOfDollarsAndWons(t *testing.T) {
 	var portfolio stocks.Portfolio
 	portfolio = portfolio.Add(oneDollar)
 	portfolio = portfolio.Add(elvenHundredWon)
-	rst, _ := portfolio.Evaluate("KRW")
-
+	rst, err := portfolio.Evaluate(bank, "KRW")
+	asserNil(t, err)
 	expected := stocks.NewMoney(2200, "KRW")
 
-	assetEqual(t, expected, rst)
+	assetEqual(t, expected, *rst)
 }
 
 func TestAddtionWithMissingExchangeRates(t *testing.T) {
@@ -58,7 +66,8 @@ func TestAddtionWithMissingExchangeRates(t *testing.T) {
 	portfolio = portfolio.Add(oneWon)
 
 	expectedErreMsg := "Missing exchange rate(s): [USD->Kalganid,EUR->Kalganid,KRW->Kalganid]"
-	_, actualErr := portfolio.Evaluate("Kalganid")
+	value, actualErr := portfolio.Evaluate(bank, "Kalganid")
+	asserNil(t, value)
 	if actualErr.Error() != expectedErreMsg {
 		t.Errorf("failed, expected %q, actual %q", expectedErreMsg, actualErr.Error())
 	}
@@ -68,8 +77,6 @@ func TestAddtionWithMissingExchangeRates(t *testing.T) {
 
 func TestConversion(t *testing.T) {
 	tenEuros := stocks.NewMoney(10, "EUR")
-	bank := stocks.NewBank()
-	bank.AddExchangeRates("EUR", "USD", 1.2)
 	actual, err := bank.Convert(tenEuros, "USD")
 	expected := stocks.NewMoney(12, "USD")
 	asserNil(t, err)
@@ -78,6 +85,14 @@ func TestConversion(t *testing.T) {
 	}
 
 	assetEqual(t, *actual, expected)
+}
+
+func TestConversionWithMissingExchangeRate(t *testing.T) {
+	tenEuros := stocks.NewMoney(10, "EUR")
+	convertedMoney, err := bank.Convert(tenEuros, "Kalganid")
+	asserNil(t, convertedMoney)
+	expected := "EUR->Kalganid"
+	assetEqual(t, expected, err.Error())
 }
 
 // asserNil 断言 actual 为 nil，包括接口中装着的带类型的 nil。

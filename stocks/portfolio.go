@@ -11,27 +11,27 @@ func (p Portfolio) Add(m Money) Portfolio {
 	return append(p, m)
 }
 
-func (p Portfolio) Evaluate(currency string) (Money, error) {
+func (p Portfolio) Evaluate(bank Bank, currency string) (*Money, error) {
 	// 	expectedErreMsg := "Missing exchange rate(s): [USD->Kalganid,EUR->Kalganid,KRW->Kalganid,]"
 
 	failures := []string{}
 	total := 0.0
 	for _, m := range p {
-		if amount, ok := convert(m, currency); ok {
-			total += amount
+		if toMoney, err := bank.Convert(m, currency); err == nil {
+			total += toMoney.amount
 		} else {
 			failures = append(failures, m.currency+"->"+currency)
 		}
 	}
 
 	if len(failures) == 0 {
-		return Money{total, currency}, nil
+		return &Money{total, currency}, nil
 	}
 
 	missing := strings.Join(failures, ",")
-	msg := "Missing exchange rate(s): " +"[" + missing + "]"
+	msg := "Missing exchange rate(s): " + "[" + missing + "]"
 
-	return Money{0, ""}, errors.New(msg)
+	return nil, errors.New(msg)
 }
 
 // convert 把 Money 转成指定币种对应的金额
