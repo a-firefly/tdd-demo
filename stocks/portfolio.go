@@ -33,20 +33,3 @@ func (p Portfolio) Evaluate(bank Bank, currency string) (*Money, error) {
 
 	return nil, errors.New(msg)
 }
-
-// convert 把 Money 转成指定币种对应的金额
-func convert(m Money, currency string) (float64, bool) {
-	if m.currency == currency {
-		return m.amount, true
-	}
-
-	exchangeRates := map[string]float64{
-		"EUR->USD": 1.2,
-		"USD->KRW": 1100,
-	}
-
-	key := m.currency + "->" + currency
-	rate, ok := exchangeRates[key]
-
-	return rate * m.amount, ok
-}
