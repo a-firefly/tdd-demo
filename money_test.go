@@ -9,6 +9,10 @@ import (
 var bank stocks.Bank
 
 func init() {
+	initBankWithExchangeRates()
+}
+
+func initBankWithExchangeRates() {
 	bank = stocks.NewBank()
 	bank.AddExchangeRates("EUR", "USD", 1.2)
 	bank.AddExchangeRates("USD", "KRW", 1100)
@@ -31,6 +35,8 @@ func TestMoney_Divide(t *testing.T) {
 }
 
 func TestAddtionOfUSDAndEUR(t *testing.T) {
+	initBankWithExchangeRates()
+
 	fiveUSD := stocks.NewMoney(5, "USD")
 	tenEUR := stocks.NewMoney(10, "EUR")
 	var portfolio stocks.Portfolio
@@ -44,6 +50,8 @@ func TestAddtionOfUSDAndEUR(t *testing.T) {
 }
 
 func TestAddtionOfDollarsAndWons(t *testing.T) {
+	initBankWithExchangeRates()
+
 	oneDollar := stocks.NewMoney(1, "USD")
 	elvenHundredWon := stocks.NewMoney(1100, "KRW")
 	var portfolio stocks.Portfolio
@@ -57,6 +65,8 @@ func TestAddtionOfDollarsAndWons(t *testing.T) {
 }
 
 func TestAddtionWithMissingExchangeRates(t *testing.T) {
+	initBankWithExchangeRates()
+
 	oneDollar := stocks.NewMoney(1, "USD")
 	oneEuro := stocks.NewMoney(1, "EUR")
 	oneWon := stocks.NewMoney(1, "KRW")
@@ -75,13 +85,17 @@ func TestAddtionWithMissingExchangeRates(t *testing.T) {
 	assetEqual(t, expectedErreMsg, actualErr.Error())
 }
 
+// TestConversionWithDifferentRates 测试修改汇率前后转换货币是不是正确
 func TestConversionWithDifferentRates(t *testing.T) {
+	initBankWithExchangeRates()
+
 	tenEuros := stocks.NewMoney(10, "EUR")
 	actual, err := bank.Convert(tenEuros, "USD")
 	expected := stocks.NewMoney(12, "USD")
 	asserNil(t, err)
 	assetEqual(t, *actual, expected)
 
+	// 修改汇率后再兑换货币
 	bank.AddExchangeRates("EUR", "USD", 1.3)
 	actual, err = bank.Convert(tenEuros, "USD")
 	expected = stocks.NewMoney(13, "USD")
@@ -89,7 +103,19 @@ func TestConversionWithDifferentRates(t *testing.T) {
 	assetEqual(t, *actual, expected)
 }
 
+func TestWhatIsCoversionRateFromEURToUSD(t *testing.T) {
+	initBankWithExchangeRates()
+
+	tenEuros := stocks.NewMoney(10, "EUR")
+	actual, err := bank.Convert(tenEuros, "USD")
+	expected := stocks.NewMoney(12, "USD")
+	asserNil(t, err)
+	assetEqual(t, *actual, expected)
+}
+
 func TestConversionWithMissingExchangeRate(t *testing.T) {
+	initBankWithExchangeRates()
+
 	tenEuros := stocks.NewMoney(10, "EUR")
 	convertedMoney, err := bank.Convert(tenEuros, "Kalganid")
 	asserNil(t, convertedMoney)
