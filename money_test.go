@@ -75,15 +75,17 @@ func TestAddtionWithMissingExchangeRates(t *testing.T) {
 	assetEqual(t, expectedErreMsg, actualErr.Error())
 }
 
-func TestConversion(t *testing.T) {
+func TestConversionWithDifferentRates(t *testing.T) {
 	tenEuros := stocks.NewMoney(10, "EUR")
 	actual, err := bank.Convert(tenEuros, "USD")
 	expected := stocks.NewMoney(12, "USD")
 	asserNil(t, err)
-	if actual == nil {
-		t.Error("unknown error")
-	}
+	assetEqual(t, *actual, expected)
 
+	bank.AddExchangeRates("EUR", "USD", 1.3)
+	actual, err = bank.Convert(tenEuros, "USD")
+	expected = stocks.NewMoney(13, "USD")
+	asserNil(t, err)
 	assetEqual(t, *actual, expected)
 }
 
