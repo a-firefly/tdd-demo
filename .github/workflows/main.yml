@@ -1,0 +1,11 @@
+name: builder
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest, macos-latest, windows-latest ]
+  runs-on: ${{ matrix.platform }}
